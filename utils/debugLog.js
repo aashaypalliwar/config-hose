@@ -3,7 +3,7 @@
  * @param {String} statement - Statement to be logged on console in debug mode. 
  */
 let log = (statement) => {
-  if (process.env.HOSE_DEBUG === "true") {
+  if (process.env.HOSE_MODE === "debug") {
     console.log(statement);
   }
 }
