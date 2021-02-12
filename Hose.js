@@ -2,6 +2,7 @@ const { jsonParser } = require("./parsers/jsonParser");
 const { yamlParser } = require("./parsers/yamlParser");
 const { envParser } = require("./parsers/envParser");
 const HoseError = require("./utils/HoseError");
+const { isString, isFunction } = require("./utils/typeValidators");
 
 
 class Hose {
@@ -11,6 +12,8 @@ class Hose {
    */
   initRegistries() {
     this.customParsers = {};
+    this.supportedDefinitionFormats = ["JSON", "YAML"];
+    this.fileRegister = {};
   }
 
   /**
@@ -23,10 +26,24 @@ class Hose {
   loadDefaultParsers() {
     
     this.defaultParsers = {
-      jsonParser,
-      yamlParser,
-      envParser
+      "JSON": jsonParser,
+      "YAML": yamlParser,
+      "ENV": envParser
     }
+
+  }
+
+  loadDefinition(configDefinitionSource, fileType) {
+
+    if (!isString(fileType)) {
+      throw new HoseError("Hose Error: Definition-file type must be a string");
+    }
+    
+    if (!this.supportedDefinitionFormats.includes(fileType)) {
+      throw new HoseError(`Hose Error: Definition file of unsupported format - ${fileType}`);
+    }
+
+    this.defaultParsers[fileType](configDefinitionSource)
 
   }
 
@@ -37,11 +54,11 @@ class Hose {
    */
   setCustomParser(alias, parser) {
 
-    if (typeof parser !== "function") {
+    if (!isFunction(parser)) {
       throw new HoseError("Hose Error: Custom parser must be a function");
     }
 
-    if (typeof alias !== 'string' && !(alias instanceof String)) {
+    if (!isString(alias)) {
       throw new HoseError("Hose Error: Alias to a custom parser must be a string");
     }
 
@@ -55,7 +72,7 @@ class Hose {
    */
   getCustomParser(alias) {
 
-    if (typeof alias !== 'string' && !(alias instanceof String)) {
+    if (!isString(alias)) {
       throw new HoseError("Hose Error: Alias to a custom parser must be a string");
     }
 
@@ -71,6 +88,7 @@ class Hose {
 
     this.initRegistries();
     this.loadDefaultParsers();
+    //this.loadDefinition(configDefinitionSource, fileType);
 
     // this.configRegister = null //Object that holds configuration
     // this.parserRegister = null//Object that holds all parsers

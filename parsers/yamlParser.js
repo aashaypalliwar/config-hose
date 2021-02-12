@@ -2,6 +2,7 @@ const fs = require('fs');
 const HoseError = require("../utils/HoseError");
 const yaml = require('js-yaml');
 const { log } = require('../utils/debugLog');
+const { isString, isObject } = require('../utils/typeValidators');
 
 /**
  * Default YAML parser for the package
@@ -11,7 +12,7 @@ const { log } = require('../utils/debugLog');
  */
 let yamlParser = (fileUri) => {
   
-  if (typeof fileUri !== 'string' && !(fileUri instanceof String)) {
+  if (!isString(fileUri)) {
     throw new HoseError("Hose Error: improper file-uri passed.");
   }
 
@@ -24,7 +25,7 @@ let yamlParser = (fileUri) => {
     log("Parse successful");
     log("Content parsed - " + JSON.stringify(content));
 
-    if (typeof content !== 'object' || content === null) {
+    if (!isObject(content)) {
       throw new HoseError("Parsed content is not a JS object");
     }
 

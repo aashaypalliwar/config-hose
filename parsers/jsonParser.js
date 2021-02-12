@@ -1,6 +1,7 @@
 const fs = require('fs');
 const { log } = require('../utils/debugLog');
 const HoseError = require("../utils/HoseError");
+const { isString, isObject } = require('../utils/typeValidators');
 
 /**
  * Default JSON parser for the package
@@ -10,7 +11,7 @@ const HoseError = require("../utils/HoseError");
  */
 let jsonParser = (fileUri) => {
   
-  if (typeof fileUri !== 'string' && !(fileUri instanceof String)) {
+  if (!isString(fileUri)) {
     throw new HoseError("Hose Error: improper file-uri passed");
   }
 
@@ -24,7 +25,7 @@ let jsonParser = (fileUri) => {
     log("Parse successful");
     log("Content parsed - " + JSON.stringify(content));
 
-    if (typeof content !== 'object' || content === null) {
+    if (!isObject(content)) {
       throw new HoseError("Parsed content is not a JS object");
     }
 
