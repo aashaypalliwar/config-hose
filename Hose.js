@@ -2,7 +2,8 @@ const { jsonParser } = require("./parsers/jsonParser");
 const { yamlParser } = require("./parsers/yamlParser");
 const { envParser } = require("./parsers/envParser");
 const HoseError = require("./utils/HoseError");
-const { isString, isFunction } = require("./utils/typeValidators");
+const fs = require("fs");
+const { isString, isFunction, isFile } = require("./utils/typeValidators");
 const { getFileURI } = require("./utils/getFileUri");
 
 
@@ -15,6 +16,7 @@ class Hose {
     this.customParsers = {};
     this.supportedDefinitionFormats = ["JSON", "YAML"];
     this.fileRegister = {};
+    this.config = {};
   }
 
   /**
@@ -40,17 +42,17 @@ class Hose {
    * @param {String} fileType 
    */
   loadDefinition(configDefinitionSource, fileType) {
-
-    if (!isString(fileType)) {
-      throw new HoseError("Hose Error: Definition-file type must be a string");
-    }
-    
+ 
     if (!this.supportedDefinitionFormats.includes(fileType)) {
       throw new HoseError(`Hose Error: Definition file of unsupported format - ${fileType}`);
     }
 
     let defUri = getFileURI(configDefinitionSource);
+    if (!isFile(defUri)) {
+      throw new HoseError("Hose Error: Definition file does not exist");
+    }
 
+    this.fileRegister["definition"] = defUri;
     this.definition = this.defaultParsers[fileType](defUri);
 
   }
@@ -94,17 +96,10 @@ class Hose {
 
   constructor(configDefinitionSource, fileType = 'JSON') {
 
-    if(!isString(configDefinitionSource)) {
-      throw new HoseError("Hose Error: Definition file not defined");
-    }
-
     this.initRegistries();
     this.loadDefaultParsers();
     this.loadDefinition(configDefinitionSource, fileType);
 
-    // this.configRegister = null //Object that holds configuration
-    // this.parserRegister = null//Object that holds all parsers
-    // this.fileRegister = null  //Object that holds all fileRegister
     // this.variablesWithUnknownSource  = null // Array of variables with unknown source.
   }
 }
