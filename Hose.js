@@ -16,6 +16,8 @@ class Hose {
     this.supportedDefinitionFormats = ["JSON", "YAML"];
     this.fileRegister = {};
     this.config = {};
+    this.unresolvedVariableGroups = [];
+    // this.variableList = [];
   }
 
   /**
@@ -48,13 +50,26 @@ class Hose {
 
     // let defUri = getFileURI(configDefinitionSource);
     let defUri = configDefinitionSource;
-    
+
     if (!isFile(defUri)) {
       throw new HoseError("Hose Error: Definition file does not exist");
     }
 
+    //Load definition
     this.definition = this.defaultParsers[fileType](defUri);
 
+    //Load config-identifier
+    this.config_identifier = isString(this.definition.config_identifier) ?
+    process.env[this.definition.config_identifier]
+    : process.env["NODE_ENV"];
+
+    if(!isString(this.config_identifier)) {
+      throw new HoseError("Hose Error: The configuration identifier is undefined");
+    }
+
+    //Load error-mode
+    let defined_error_mode = (isString(this.definition.error_mode)) ? this.definition.error_mode : "noisy";
+    this.noisyError = (defined_error_mode === "silent") ? false : true;
   }
 
   /**
@@ -154,13 +169,39 @@ class Hose {
 
   }
 
+  loadVariableRegisters() {
+
+    for (const group of this.definition.variableGroups) {
+
+      if (group["source"].hasOwnProperty(this.config_identifier)) {
+        this.unresolvedVariableGroups.push({
+          "variables": [...group["variables"]],
+          "source": group["source"][this.config_identifier]
+        });
+
+        for (const variable of group["variables"]) {
+          this.config[variable] = {
+            "value": undefined,
+            "available": false
+          }
+        }        
+      }
+
+    }
+    
+    if (this.unresolvedVariableGroups.length === 0 && this.noisyError) {
+      throw new HoseError("Hose Error: No variables defined for the provided config-mode");
+    }
+
+  }
+
   constructor(configDefinitionSource, fileType = 'JSON') {
 
     this.initRegistries();
     this.loadDefaultParsers();
     this.loadDefinition(configDefinitionSource, fileType);
     this.loadFileMetadata();
-
+    this.loadVariableRegisters();
     // this.variablesWithUnknownSource  = null // Array of variables with unknown source.
   }
 }
