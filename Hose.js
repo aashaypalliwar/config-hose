@@ -16,7 +16,7 @@ class Hose {
     this.supportedDefinitionFormats = ["JSON", "YAML"];
     this.fileRegister = {};
     this.config = {};
-    this.unresolvedVariableGroups = [];
+    this.variableGroups = [];
     // this.variableList = [];
   }
 
@@ -148,6 +148,7 @@ class Hose {
     }
 
     this.customParsers[alias] = parser;
+    this.populateVariables();
 
   }
 
@@ -169,14 +170,19 @@ class Hose {
 
   }
 
-  loadVariableRegisters() {
+  /**
+   * Initialize variable register
+   */
+  loadVariableRegister() {
 
     for (const group of this.definition.variableGroups) {
 
       if (group["source"].hasOwnProperty(this.config_identifier)) {
-        this.unresolvedVariableGroups.push({
+        this.variableGroups.push({
           "variables": [...group["variables"]],
-          "source": group["source"][this.config_identifier]
+          "source": group["source"][this.config_identifier],
+          "resolved": false,
+          "head": 0
         });
 
         for (const variable of group["variables"]) {
@@ -189,8 +195,68 @@ class Hose {
 
     }
     
-    if (this.unresolvedVariableGroups.length === 0 && this.noisyError) {
+    if (this.variableGroups.length === 0 && this.noisyError) {
       throw new HoseError("Hose Error: No variables defined for the provided config-mode");
+    }
+
+  }
+
+  /**
+   * Populate config variables with values fetched from the source files
+   */
+  populateVariables() {
+    
+    for (const group of this.variableGroups) {
+
+      if (!group.resolved){
+        let variableList = group.variables;
+        let variableCount = group.variables.length;
+        let head = group.head;
+
+        while (true) {
+          console.log(group)
+          if(head === group.source.length) {
+            throw new HoseError("Hose Error: Some variables not found from a variable group");
+          }
+
+          let resolvedCount = 0;
+          let unresolvedVariables = [];
+          let fileAlias = group.source[head];
+          let parserGroup = (this.fileRegister[fileAlias].isDefault) ? this.defaultParsers : this.customParsers;
+          let parserAlias = this.fileRegister[fileAlias].parserAlias;
+
+          if (!this.fileRegister[fileAlias].isDefault && !this.customParsers.hasOwnProperty(parserAlias)) break;
+
+          let parser = parserGroup[parserAlias];
+
+          let content = parser(this.fileRegister[fileAlias].fileUri);
+          if (!isObject(content)) {
+            throw new HoseError("Hose Error: Parsed content is not an object");
+          }
+
+          for (const variable in variableList) {
+            if (content.hasOwnProperty(variable)) {
+              this.config[variable].value = content[variable];
+              this.config[variable].available = true;
+              resolvedCount += 1;
+            } else {
+              unresolvedVariables.push(variable);
+            }
+          }
+
+          if (resolvedCount === variableCount) {
+            group.resolved = true;
+            break;
+          } else {
+            variableList = [...unresolvedVariables];
+            group.variables = [...unresolvedVariables];
+            variableCount = variableList.length;
+            head += 1;
+            group.head = head;
+          }
+        }
+
+      }
     }
 
   }
@@ -201,7 +267,8 @@ class Hose {
     this.loadDefaultParsers();
     this.loadDefinition(configDefinitionSource, fileType);
     this.loadFileMetadata();
-    this.loadVariableRegisters();
+    this.loadVariableRegister();
+    this.populateVariables();
     // this.variablesWithUnknownSource  = null // Array of variables with unknown source.
   }
 }
