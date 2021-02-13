@@ -267,6 +267,32 @@ class Hose {
 
   }
 
+  /**
+   * Getter function for getting the value of a config-variable
+   * @param {String} key 
+   */
+  get(key) {
+    
+    if(!isString(key)) {
+      throw new HoseError("Hose Error: The key to a config-variable must be a string");
+    }
+
+    if(!this.config.hasOwnProperty(key)) {
+      throw new HoseError("Hose Error: The requested config-variable is not declared in definition file");
+    }
+
+    if(!this.config[key].available) {
+      if (this.noisyError) {
+        throw new HoseError("Hose Error: The custom parser required for fetching the value of requested variable is not set");
+      } else {
+        return null;
+      }
+    }
+
+    return this.config[key].value;
+
+  }
+
   constructor(configDefinitionSource, fileType = 'JSON') {
 
     this.initRegistries();
@@ -275,7 +301,7 @@ class Hose {
     this.loadFileMetadata();
     this.loadVariableRegister();
     this.populateVariables();
-    // this.variablesWithUnknownSource  = null // Array of variables with unknown source.
+
   }
 }
 
