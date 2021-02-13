@@ -2,6 +2,7 @@ const { jsonParser } = require("./parsers/jsonParser");
 const { yamlParser } = require("./parsers/yamlParser");
 const { envParser } = require("./parsers/envParser");
 const HoseError = require("./utils/HoseError");
+const _ = require('lodash');
 const { isString, isFunction, isFile, isObject } = require("./utils/typeValidators");
 const { getFileURI, getDefaultParserTypeForFile } = require("./utils/getFileInfo");
 
@@ -289,7 +290,7 @@ class Hose {
       }
     }
 
-    return this.config[key].value;
+    return _.cloneDeep(this.config[key].value);
 
   }
 
