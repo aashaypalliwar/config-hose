@@ -17,7 +17,6 @@ class Hose {
     this.fileRegister = {};
     this.config = {};
     this.variableGroups = [];
-    // this.variableList = [];
   }
 
   /**
@@ -214,14 +213,20 @@ class Hose {
         let head = group.head;
 
         while (true) {
-          console.log(group)
+
           if(head === group.source.length) {
-            throw new HoseError("Hose Error: Some variables not found from a variable group");
+            let variables = group.variables.join(", ")
+            throw new HoseError(`Hose Error: Variable(s) - ${variables} - not found in the designated fiels`);
           }
 
           let resolvedCount = 0;
           let unresolvedVariables = [];
           let fileAlias = group.source[head];
+
+          if(!this.fileRegister.hasOwnProperty(fileAlias)) {
+            throw new HoseError(`Hose Error: File alias - ${fileAlias} is not provided in list of files`)
+          }
+
           let parserGroup = (this.fileRegister[fileAlias].isDefault) ? this.defaultParsers : this.customParsers;
           let parserAlias = this.fileRegister[fileAlias].parserAlias;
 
@@ -231,10 +236,11 @@ class Hose {
 
           let content = parser(this.fileRegister[fileAlias].fileUri);
           if (!isObject(content)) {
-            throw new HoseError("Hose Error: Parsed content is not an object");
+            throw new HoseError(`Hose Error: Parsed content is not an object for file with alias - ${fileAlias}`);
           }
 
-          for (const variable in variableList) {
+          for (const variable of variableList) {
+
             if (content.hasOwnProperty(variable)) {
               this.config[variable].value = content[variable];
               this.config[variable].available = true;
