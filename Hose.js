@@ -70,6 +70,9 @@ class Hose {
     //Load error-mode
     let defined_error_mode = (isString(this.definition.error_mode)) ? this.definition.error_mode : "noisy";
     this.noisyError = (defined_error_mode === "silent") ? false : true;
+
+    //Immuatability
+    this.isImmutable = (this.definition.immutable === false) ? false : true;
   }
 
   /**
@@ -290,7 +293,11 @@ class Hose {
       }
     }
 
-    return _.cloneDeep(this.config[key].value);
+    if(this.isImmutable) {
+      return _.cloneDeep(this.config[key].value);
+    } else {
+      return this.config[key].value;
+    }
 
   }
 
