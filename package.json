@@ -24,7 +24,7 @@
     "parser",
     "reader"
   ],
-  "license": "ISC",
+  "license": "MIT",
   "dependencies": {
     "js-yaml": "^4.0.0",
     "lodash": "^4.17.20"
