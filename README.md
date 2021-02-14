@@ -2,9 +2,9 @@
 
 Config Hose is an unopinionated, pluggable and no-nonsense configuration manager that enables its users to decouple configuration management logic from the source code. 
 
-Unlike other available packages, hose removes ambiguity of usage by providing a way of defining config-variables and their respective sources. Users can define their own parsers and plug it into the hose or use the default parsers to siphon the configurations from the files of their choice and even validate them before using.
+Unlike other available packages, hose removes the ambiguity of usage by providing a way of defining config-variables and their respective sources. Users can define their own parsers and plug it into the hose or use the default parsers to siphon the configurations from the files of their choice and even validate them before using.
 
-With one definition file, the hose interface does all the heavy lifting and routes the configurations from various sources (possibly of different type) depending on the configuration identifier environment variable of user's choice.
+With one definition file, the hose interface does all the heavy lifting and routes the configurations from various sources (possibly of different types) depending on the configuration identifier environment variable of user's choice.
 
 The hose, by default, provides support for JSON, YAML and .env-type files.
 
@@ -82,7 +82,7 @@ console.log(hose.get("PORT"));
 console.log(hose.get("FCM_API_KEY"));
 ```
 
-Note that the cutom parser function should accept a path to a file and return a JavaScript object with key-value pairs of the required configuration variables. Additional validation and error-detection may be implemented in the custom-parser as per the user's need. 
+Note that the custom parser function should accept a path to a file and return a JavaScript object with key-value pairs of the required configuration variables. Additional validation and error-detection may be implemented in the custom-parser as per the user's need. 
 
 The following command will make config-hose get the variable values from the "development" source of respective variable groups and provide them in the code.
 ```sh
@@ -94,7 +94,7 @@ The following command will make config-hose get the variable values from the "pr
 $ CONFIG_TYPE=production node index.js
 ```
 
-If multiple file-aliases are provided in the source array (as done for the "development" source of the second group above), the hose uses rest of the files as fall-back in case some variables are not found in the first file of the list.
+If multiple file-aliases are provided in the source array (as done for the "development" source of the second group above), the hose uses rest of the files as a fall-back in case some variables are not found in the first file of the list.
 
 ## Options
 ```json
@@ -111,9 +111,9 @@ If multiple file-aliases are provided in the source array (as done for the "deve
     ]
 }
 ```
-1. "config_identifier" - It is the environment variable that holds the value which identfies file sources to be used for fetching values for a variable groups. Default - NODE_ENV
+1. "config_identifier" - It is the environment variable that holds the value which identifies file sources to be used for fetching values for respective variable groups. Default - NODE_ENV
 2. "error_mode" - If silent, .get() for unavailable (but declared) values return null, otherwise throws error. Default- "noisy". Variables which are not present in a particular config-mode will always throw error on .get()
-3. "immutable" - If false, mutations on the variables in business logic will be reflected in later .get()'s., otherwise the config-variables will give same values everytime. Default - true
+3. "immutable" - If false, mutations on the variables in business logic will be reflected in later .get()'s., otherwise the config-variables will give the same values every time. Default - true
 
 ```json
 {   
@@ -122,7 +122,7 @@ If multiple file-aliases are provided in the source array (as done for the "deve
     }
 }
 ```
-In case of simple declaration of file and its alias, default JSON parser will be used to fetch values if the path to the file ends in .json. Default YAML parser will be used if path ends in .yaml or .yml . In all other cases, file type will be assumed to be like .env file and parsed using default ENV parser. 
+In case of a simple declaration of a file and its alias, default JSON parser will be used to fetch values if the path to the file ends in .json. Default YAML parser will be used if path ends in .yaml or .yml. In all other cases, the file type will be assumed to be like .env file and parsed using default ENV parser. 
 
 ```json
 {   
@@ -135,7 +135,7 @@ In case of simple declaration of file and its alias, default JSON parser will be
     }
 }
 ```
-1. "useDefault" option may be used to explicitly mention the default parser to be employeed. Legal values - "JSON", "YAML" and "ENV".
+1. "useDefault" option may be used to explicitly mention the default parser to be employed. Legal values - "JSON", "YAML" and "ENV".
 2. "isAbsolute", if set to true, will use the path as the absolute path to the file. Default value is false, in which case the path is relative to the current working directory of the process.
 
 ## Debug
