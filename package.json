@@ -1,0 +1,32 @@
+{
+  "name": "config-hose",
+  "version": "1.0.0",
+  "description": "Unopinionated, pluggable and no-nonsense configuration manager that decouples configuration management logic from the source code.",
+  "main": "index.js",
+  "author": "Aashay Palliwar <palliwar.aashay@gmail.com>",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/aashaypalliwar/config-hose"
+  },
+  "keywords": [
+    ".env",
+    "environment",
+    "variables",
+    "node",
+    "custom",
+    "dotenv",
+    "config",
+    "configuration",
+    "config file",
+    "json",
+    "secret",
+    "secrets",
+    "parser",
+    "reader"
+  ],
+  "license": "ISC",
+  "dependencies": {
+    "js-yaml": "^4.0.0",
+    "lodash": "^4.17.20"
+  }
+}
