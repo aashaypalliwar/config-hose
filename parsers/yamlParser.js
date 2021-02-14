@@ -23,7 +23,6 @@ let yamlParser = (fileUri) => {
     let content = yaml.load(fs.readFileSync(fileUri, 'utf8'));
 
     log("Parse successful");
-    log("Content parsed - " + JSON.stringify(content));
 
     if (!isObject(content)) {
       throw new HoseError("Parsed content is not a JS object");

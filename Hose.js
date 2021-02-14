@@ -5,6 +5,7 @@ const HoseError = require("./utils/HoseError");
 const _ = require('lodash');
 const { isString, isFunction, isFile, isObject } = require("./utils/typeValidators");
 const { getFileURI, getDefaultParserTypeForFile } = require("./utils/getFileInfo");
+const { log } = require("./utils/debugLog");
 
 
 class Hose {
@@ -34,6 +35,8 @@ class Hose {
       "YAML": yamlParser,
       "ENV": envParser
     }
+
+    log(`Default parsers loaded. Parsers available are - ${Object.keys(this.defaultParsers)}`);
 
   }
 
@@ -73,6 +76,12 @@ class Hose {
 
     //Immuatability
     this.isImmutable = (this.definition.immutable === false) ? false : true;
+
+    log(`Definition loaded.`);
+    log(`Config Identifier - ${this.config_identifier}`);
+    log(`Is error noisy? - ${this.noisyError}`);
+    log(`Are variables immutable? - ${this.isImmutable}`);
+
   }
 
   /**
@@ -133,6 +142,9 @@ class Hose {
 
     }
 
+    log("File register loaded. Following files available");
+    log(this.fileRegister);
+
   }
 
   /**
@@ -151,6 +163,9 @@ class Hose {
     }
 
     this.customParsers[alias] = parser;
+
+    log(`Custom parser with alias - ${alias} registered. Now refreshing the config register`);
+
     this.populateVariables();
 
   }
@@ -178,6 +193,8 @@ class Hose {
    */
   loadVariableRegister() {
 
+    log("Loading variable register..");
+
     for (const group of this.definition.variableGroups) {
 
       if (group["source"].hasOwnProperty(this.config_identifier)) {
@@ -201,6 +218,8 @@ class Hose {
     if (this.variableGroups.length === 0 && this.noisyError) {
       throw new HoseError("Hose Error: No variables defined for the provided config-mode");
     }
+
+    log(`Following variables are declared for the current config-mode - ${Object.keys(this.config).join(", ")}`);
 
   }
 
@@ -268,6 +287,9 @@ class Hose {
 
       }
     }
+
+    log("Population attempt complete. Following is the status of variables.");
+    log(this.config);
 
   }
 

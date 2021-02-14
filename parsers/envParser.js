@@ -57,7 +57,6 @@ let envParser = (fileUri) => {
       });
 
     log("Parse successful");
-    log("Content parsed - " + JSON.stringify(content));
 
     if (!isObject(content)) {
       throw new HoseError("Parsed content is not a JS object");
