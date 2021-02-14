@@ -25,7 +25,7 @@ let getDefaultParserTypeForFile = (path) => {
 
   if (path.toLowerCase().trim().endsWith(".json")) {
     return "JSON";
-  } else if (path.toLowerCase().trim().endsWith(".yaml")) {
+  } else if (path.toLowerCase().trim().endsWith(".yaml") || path.toLowerCase().trim().endsWith(".yml")) {
     return "YAML";
   } else {
     return "ENV";
