@@ -104,10 +104,10 @@ If multiple file-aliases are provided in the source array (as done for the "deve
     "immutable": false,
 
     "files": {
-      ...
+      
     },
     "variableGroups": [
-      ...
+      
     ]
 }
 ```
@@ -116,26 +116,23 @@ If multiple file-aliases are provided in the source array (as done for the "deve
 3. "immutable" - If false, mutations on the variables in business logic will be reflected in later .get()'s., otherwise the config-variables will give same values everytime. Default - true
 
 ```json
-{
-    ...
+{   
     "files": {
-        "env_dev": "/config/dev/.env",
-        ...
+        "env_dev": "/config/dev/.env",   
     }
-    ...
 }
 ```
 In case of simple declaration of file and its alias, default JSON parser will be used to fetch values if the path to the file ends in .json. Default YAML parser will be used if path ends in .yaml or .yml . In all other cases, file type will be assumed to be like .env file and parsed using default ENV parser. 
 
 ```json
-{
-    ...
+{   
+    "files": {
         "keys_prod": {
             "fileUri": "/usr/app/prod/keys",
             "isAbsolute": true,
             "useDefault": "ENV"
-        },
-    ...
+        }  
+    }
 }
 ```
 1. "useDefault" option may be used to explicitly mention the default parser to be employeed. Legal values - "JSON", "YAML" and "ENV".
